@@ -18,7 +18,7 @@ namespace DataAccess.Concrete.EntityFramework
             {
                 var result = from rnt in filter is null ? context.Rentals : context.Rentals.Where(filter)
                              join ca in context.Cars
-                             on rnt.CarId equals ca.Id
+                             on rnt.CarId equals ca.CarId
                              join cst in context.Customers
                              on rnt.CustomerId equals cst.Id
                              join usr in context.Users
@@ -28,7 +28,7 @@ namespace DataAccess.Concrete.EntityFramework
                                  Id = rnt.Id,
                                  CarName = ca.CarName,
                                  CustomerName = cst.CompanyName,
-                                 CarId = ca.Id,
+                                 CarId = ca.CarId,
                                  RentDate = rnt.RentDate,
                                  ReturnDate = rnt.ReturnDate,
                                  UserName = usr.FirstName + " " + usr.LastName
