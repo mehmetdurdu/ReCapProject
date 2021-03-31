@@ -1,7 +1,9 @@
 ﻿using Business.Abstract;
+using Business.BusinessAspects.Autofac;
 using Business.Constants;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Autofac.Validation;
+using Core.Utitilies.Business;
 using Core.Utitilies.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
@@ -22,10 +24,11 @@ namespace Business.Concrete
             _rentalDal = rentalDal;
         }
 
+        [SecuredOperation("rental.add,admin")]
         [ValidationAspect(typeof(RentalValidator))]
         public IResult Add(Rental rental)
         {
-            var result = CheckReturnDate(rental.CarId);
+            var result = BusinessRules.Run(CheckRentalCar(rental.CarId));
 
             if (!result.Success)
             {
@@ -47,6 +50,7 @@ namespace Business.Concrete
             return new SuccessResult(Messages.RentalAdded);
         }
 
+        [SecuredOperation("rental.delete,admin")]
         public IResult Delete(Rental rental)
         {
             _rentalDal.Delete(rental);
@@ -68,6 +72,7 @@ namespace Business.Concrete
             return new SuccessDataResult<List<RentalDetailDto>>(_rentalDal.GetRentalDetails(r => r.CarId == carId));
         }
 
+        [SecuredOperation("rental.update,admin")]
         public IResult Update(Rental rental)
         {
             _rentalDal.Update(rental);
@@ -87,6 +92,16 @@ namespace Business.Concrete
             updatedRental.ReturnDate = DateTime.Now;
             _rentalDal.Update(updatedRental);
             return new SuccessResult(Messages.RentalReturnDate);
+        }
+
+        private IResult CheckRentalCar(int carId)
+        {
+            var result = _rentalDal.Get(r => r.CarId == carId && r.ReturnDate != null);
+            if (result != null)
+            {
+                return new ErrorResult();
+            }
+            return new SuccessResult();
         }
     }
 }

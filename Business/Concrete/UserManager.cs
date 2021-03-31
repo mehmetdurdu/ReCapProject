@@ -48,7 +48,7 @@ namespace Business.Concrete
 
         public IDataResult<User> GetByMail(string email)
         {
-            throw new NotImplementedException();
+            return new SuccessDataResult<User>(_userDal.Get(u => u.Email == email));
         }
 
         public IDataResult<List<OperationClaim>> GetClaims(User user)
