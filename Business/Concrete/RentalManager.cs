@@ -18,10 +18,14 @@ namespace Business.Concrete
     public class RentalManager : IRentalService
     {
         IRentalDal _rentalDal;
+        IFindeksService _findeksService;
+        ICarService _carService;
 
-        public RentalManager(IRentalDal rentalDal)
+        public RentalManager(IRentalDal rentalDal, ICarService carService, IFindeksService findeksService)
         {
             _rentalDal = rentalDal;
+            _carService = carService;
+            _findeksService = findeksService;
         }
 
         [SecuredOperation("rental.add,admin")]
@@ -36,6 +40,17 @@ namespace Business.Concrete
             }
             _rentalDal.Add(rental);
             return new SuccessResult(result.Message);
+        }
+
+        public IResult CheckFindeksScore(Rental rental)
+        {
+            var car = _carService.GetCarDetailsByCarId(rental.CarId).Data;
+            var findeks = _findeksService.GetByCustomerId(rental.CustomerId).Data;
+
+            if (findeks == null) return new ErrorResult(Messages.FindeksNotFound);
+            
+
+            return new SuccessResult();
         }
 
         public IResult CheckReturnDate(int carId)
@@ -64,12 +79,24 @@ namespace Business.Concrete
 
         public IDataResult<Rental> GetById(int id)
         {
-            return new SuccessDataResult<Rental>(_rentalDal.Get(r => r.Id == id));
+            return new SuccessDataResult<Rental>(_rentalDal.Get(r => r.RentalId == id));
         }
 
         public IDataResult<List<RentalDetailDto>> GetRentalDetailDto(int carId)
         {
             return new SuccessDataResult<List<RentalDetailDto>>(_rentalDal.GetRentalDetails(r => r.CarId == carId));
+        }
+
+        public IResult Rentable(Rental rental)
+        {
+            var result = _rentalDal.GetAll(r => r.CarId == rental.CarId);
+
+            if (result.Any(r =>
+                r.ReturnDate >= rental.RentDate &&
+                r.RentDate <= rental.ReturnDate
+            )) return new ErrorResult(Messages.RentalNotAvailable);
+
+            return new SuccessResult();
         }
 
         [SecuredOperation("rental.update,admin")]

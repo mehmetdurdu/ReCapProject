@@ -6,6 +6,7 @@ using Core.Entities.Concrete;
 using Core.Utitilies.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
+using Entities.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -54,6 +55,11 @@ namespace Business.Concrete
         public IDataResult<List<OperationClaim>> GetClaims(User user)
         {
             return new SuccessDataResult<List<OperationClaim>>(_userDal.GetClaims(user));
+        }
+
+        public IDataResult<UserDetailDto> GetUserDetailByMail(string userMail)
+        {
+            return new SuccessDataResult<UserDetailDto>(_userDal.GetUserDetail(userMail));
         }
 
         public IResult Update(User user)

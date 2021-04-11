@@ -1,4 +1,5 @@
 ﻿using Core.Entities.Concrete;
+using Entities.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -55,5 +56,18 @@ namespace Business.Constants
         public static string PasswordError = "Hatalı parola";
         public static string UserNotFound = "Kullanıcı bulunamadı";
         public static string UserRegistered = "Kayıt olundu";
+
+        public static string creditCardAdded = "Kredi kartı eklendi";
+        public static string creditCardDeleted = "Kredi kartı silindi";
+
+        public static string FindeksNotFound = "Findeks puanı bulunamadı";
+        public static string FindeksAdded = "Findeks puanı eklendi";
+        public static string FindeksUpdated = "Findeks puanı güncellendi";
+        public static string FindeksDeleted = "Findeks puanı silindi";
+
+        public static string PaymentFailed = "Ödeme başarısız";
+        public static string PaymentSuccessful = "Ödeme başarılı";
+        internal static string FindeksNotEnoughForCar;
+        internal static string RentalNotAvailable;
     }
 }
